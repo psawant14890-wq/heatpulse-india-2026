@@ -1,0 +1,27 @@
+name: 'heatpulse'
+version: '1.0.0'
+config-version: 2
+
+profile: 'heatpulse'
+
+model-paths: ["models"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  heatpulse:
+    staging:
+      +materialized: view       # Lightweight — staging runs as views
+      +schema: staging
+    marts:
+      +materialized: table      # Mart is the dashboard-facing table — materialized for speed
+      +schema: marts
+
+# BigQuery migration: change profiles.yml target from postgres → bigquery
+# All model SQL uses BigQuery-compatible syntax (SAFE_DIVIDE, STRING, FLOAT64, INT64)

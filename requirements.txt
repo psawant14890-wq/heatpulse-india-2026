@@ -1,0 +1,28 @@
+# HeatPulse India 2026 — Dependencies
+# Install: pip install -r requirements.txt
+#
+# Cloud/Spark additions (for BigQuery + PySpark deployment):
+#   pip install dbt-bigquery pyspark==3.5.3 google-cloud-bigquery
+
+# Core data
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Statistical analysis
+scipy>=1.10.0
+scikit-learn>=1.3.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Dashboard (Streamlit deployment)
+streamlit>=1.28.0
+
+# dbt (local PostgreSQL)
+# dbt-core>=1.7.0
+# dbt-postgres>=1.7.0
+# For BigQuery: dbt-bigquery>=1.7.0
+
+# Testing
+pytest>=7.4.0

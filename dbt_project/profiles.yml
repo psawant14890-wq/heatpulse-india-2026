@@ -1,0 +1,28 @@
+heatpulse:
+  target: postgres   # Switch to 'bigquery' for cloud deployment
+  outputs:
+
+    # ── Local PostgreSQL (development) ────────────────────────────────────
+    postgres:
+      type: postgres
+      host: localhost
+      port: 5432
+      user: postgres
+      password: "{{ env_var('POSTGRES_PASSWORD') }}"
+      dbname: heatpulse
+      schema: public
+      threads: 4
+
+    # ── BigQuery (production / cloud) ─────────────────────────────────────
+    # To activate: dbt run --target bigquery
+    # Requires: pip install dbt-bigquery
+    #           gcloud auth application-default login
+    bigquery:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT_ID') }}"   # your GCP project ID
+      dataset: heatpulse
+      threads: 4
+      timeout_seconds: 300
+      location: asia-south1   # Mumbai region — lowest latency for India data
+      priority: interactive

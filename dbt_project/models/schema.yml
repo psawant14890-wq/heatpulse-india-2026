@@ -1,0 +1,92 @@
+version: 2
+
+sources:
+  - name: heatpulse
+    description: "HeatPulse India 2026 — raw data loaded from build_dataset.py"
+    tables:
+      - name: heatpulse_states
+        description: "State-level heatwave, economic, and demographic data"
+      - name: heatpulse_grid
+        description: "Daily power grid demand timeline Apr–May 2026"
+      - name: heatpulse_yearly
+        description: "Year-on-year national heatwave escalation 2020–2026"
+
+models:
+  - name: stg_heatpulse_states
+    description: "Cleaned, typed, quality-flagged state-level heat data"
+    columns:
+      - name: state
+        description: "Indian state name"
+        tests:
+          - not_null
+          - unique
+
+      - name: peak_temp_2026_c
+        description: "Highest recorded temperature in the state during Summer 2026 (°C)"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 35
+              max_value: 55
+
+      - name: heatwave_days_2026
+        description: "Number of IMD-criteria heatwave days recorded in Summer 2026"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 60
+
+      - name: heat_risk_score
+        description: "Composite Heat Risk Score (0–100)"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 100
+
+      - name: data_quality_flag
+        description: "Row-level quality check result"
+        tests:
+          - accepted_values:
+              values: ['VALID', 'MISSING_TEMP', 'OUT_OF_RANGE']
+
+  - name: mart_heat_risk_analysis
+    description: >
+      Business-ready heat risk mart. Joins state risk scores with economic 
+      impact, heatstroke health data, and intervention ROI proxy.
+      Primary deliverable table for Power BI / Looker / dashboard connection.
+    columns:
+      - name: state
+        description: "Indian state name (primary key)"
+        tests:
+          - not_null
+          - unique
+
+      - name: national_risk_rank
+        description: "State's rank by Heat Risk Score nationally (1 = highest risk)"
+        tests:
+          - not_null
+
+      - name: heat_risk_score
+        description: "Composite Heat Risk Score (0–100). North Star metric for this project."
+        tests:
+          - not_null
+
+      - name: risk_tier
+        tests:
+          - accepted_values:
+              values: ['Critical', 'Very High', 'High', 'Moderate']
+
+      - name: loss_as_pct_of_state_gdp
+        description: "Economic loss as % of state GDP — key metric for banking/investment framing"
+        tests:
+          - not_null
+
+      - name: intervention_roi_proxy
+        description: >
+          Proxy for intervention return on investment. Computed as:
+          (economic_loss_usd_mn × informal_workforce_pct%) / population_mn.
+          Higher = more economic recovery achievable per unit of adaptation spend.
+        tests:
+          - not_null

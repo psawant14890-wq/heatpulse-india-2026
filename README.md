@@ -3,6 +3,35 @@
 
 ---
 
+## 🚀 Live Deliverables
+
+| Deliverable | Link / Location |
+|---|---|
+| 🔴 **Live Interactive Dashboard** | [HeatPulse Streamlit App](https://heatpulse-india-2026-2ufehhszcve9xakmszgzcx.streamlit.app) |
+| 📊 **Power BI Dashboard** | `PowerBI Dashboards/HeatPulse_India_2026.pbix` (3 pages, interactive) |
+| 📑 **MBB Executive Deck** | `outputs/HeatPulse_India_2026_MBB_Deck.pptx` (3 slides, speaker notes) |
+| 📈 **MBB Excel Sensitivity Model** | `outputs/HeatPulse_India_2026_MBB_Model.xlsx` (3 sheets, live formulas) |
+| 🧪 **Test Results** | 52/52 tests passing — `tests/test_heatpulse.py` |
+
+### Dashboard Pages (Streamlit — fully interactive, public URL)
+- **Executive Overview** — KPI cards, demand timeline, state risk ranking, YoY escalation
+- **State Risk Analysis** — filterable table, top-5 priority states, hover detail on all 18 states
+- **Grid & Power Demand** — date range picker, temp vs demand scatter with regression line, stress level donut
+- **Economic Impact** — sector loss bars, GDP scenario columns, bubble scatter (loss vs risk score)
+- **Year-on-Year Trend** — metric dropdown switching between 5 KPIs, 2030 projection line
+- **Sensitivity Analysis** — interactive GDP slider updating KPIs in real time, 3-scenario comparison
+
+### Power BI Dashboard Pages (local .pbix — enterprise BI tool)
+- **Page 1 — Executive Overview** — 4 KPI cards, demand timeline with 260 GW threshold, state risk ranking, YoY economic loss
+- **Page 2 — Grid & Power Demand** — scatter correlation, stress level donut, YoY demand line, stress level slicer
+- **Page 3 — Economic Impact** — sector bars, GDP scenario columns, economic loss vs risk score scatter, region + tier slicers
+
+### MBB Deliverables
+- **Deck (3 slides):** Situation+Complication (dark hook slide) → Recommendation (5 state cards + 3 action pillars) → Sensitivity+Evidence (3 scenarios + 4 source cards). Speaker notes on all slides with pushback handling.
+- **Excel Model (3 sheets):** Executive Summary (SCR framing + 8 KPIs) → Sensitivity Analysis (13 blue inputs, 8 linked output formulas, Conservative/Base/Severe scenarios) → State Risk Model (18 states × 10 metrics, conditional color scale, national totals row). Zero formula errors.
+
+---
+
 ## Situation → Complication → Recommendation
 
 **Situation:** India's Summer 2026 was the third consecutive record-breaking season. On May 22, 2026, India held 97 of the world's 100 hottest cities — Balangir, Odisha peaked at 48°C, the hottest city on Earth that day. All 50 of the world's hottest cities were simultaneously located within India. Peak grid demand hit an all-time absolute record of **270.82 GW** on May 21, surpassing the 2024 record by 20.82 GW (+8.3%) and creating a 2.57 GW deficit.
@@ -103,6 +132,8 @@ data/processed/*.csv       (typed, validated datasets)
                     │
                     ▼
           outputs/ (6 charts + analysis_results.json)
+          PowerBI Dashboards/ (interactive .pbix)
+          streamlit/app.py (live public dashboard)
 ```
 
 **Transformation audit trail:** Every intermediate transformation is documented in `build_dataset.py` with inline comments citing source URLs. No silent imputation — all missing or estimated values are explicitly flagged.
@@ -150,9 +181,12 @@ data/processed/*.csv       (typed, validated datasets)
 | Scale processing | pandas chunked (PySpark-equivalent) | 2.27M-row station dataset |
 | Forecasting | sklearn PolynomialFeatures + LinearRegression | Grid demand projection |
 | Statistical analysis | scipy.stats | Correlation, CI, regression |
-| Visualization | matplotlib, seaborn | 6 publication-quality charts |
+| Visualization | Plotly (interactive) + matplotlib (static) | 6 charts + live Streamlit dashboard |
+| BI Dashboard | Power BI | 3-page interactive enterprise dashboard (.pbix) |
+| Live Dashboard | Streamlit + Plotly | 6-page public interactive web app |
+| MBB Deliverables | PowerPoint + Excel | 3-slide deck + sensitivity model |
 | Testing | Python unittest (custom) | 52 data quality + pipeline tests |
-| Version control | Git | 8-commit history with iterative messages |
+| Version control | Git | 16-commit history with iterative messages |
 
 ---
 
@@ -186,7 +220,7 @@ dbt run --profiles-dir dbt_project/
 dbt test --profiles-dir dbt_project/
 ```
 
-**One-line change from local to cloud:** swap `type: postgres` → `type: bigquery` in `profiles.yml`. All SQL models use standard syntax with BigQuery-specific notes in comments (e.g., `SAFE_DIVIDE` instead of `NULLIF`, `STRING` instead of `VARCHAR`).
+**One-line change from local to cloud:** swap `type: postgres` → `type: bigquery` in `profiles.yml`. All SQL models use standard syntax with BigQuery-specific notes in comments.
 
 ---
 
@@ -196,28 +230,30 @@ dbt test --profiles-dir dbt_project/
 heatpulse_india_2026/
 ├── data/
 │   ├── raw/
-│   │   └── build_dataset.py          # Dataset builder (all sources cited inline)
+│   │   └── build_dataset.py              # Dataset builder (all sources cited inline)
 │   └── processed/
-│       ├── heatpulse_states.csv      # 18 states × 28 columns
-│       ├── heatpulse_grid.csv        # 61-day demand timeline
-│       ├── heatpulse_yearly.csv      # 2020–2026 national series
-│       ├── heatpulse_sectors.csv     # 7-sector economic breakdown
-│       ├── heatpulse_sensitivity.csv # 3-scenario sensitivity table
-│       └── spark_summer_summary.csv  # Aggregated from 2.27M-row dataset
+│       ├── heatpulse_states.csv          # 18 states × 28 columns
+│       ├── heatpulse_grid.csv            # 61-day demand timeline
+│       ├── heatpulse_yearly.csv          # 2020–2026 national series
+│       ├── heatpulse_sectors.csv         # 7-sector economic breakdown
+│       ├── heatpulse_sensitivity.csv     # 3-scenario sensitivity table
+│       └── spark_summer_summary.csv      # Aggregated from 2.27M-row dataset
 ├── sql/
-│   └── 01_core_analysis.sql          # 5 business queries (CTEs, window functions)
+│   └── 01_core_analysis.sql              # 5 business queries (CTEs, window functions)
 ├── dbt_project/
 │   ├── models/
 │   │   ├── staging/stg_heatpulse_states.sql
 │   │   ├── marts/mart_heat_risk_analysis.sql
-│   │   └── schema.yml                # dbt tests (not_null, unique, accepted_values)
+│   │   └── schema.yml                    # dbt tests (not_null, unique, accepted_values)
 │   └── dbt_project.yml
 ├── spark/
-│   └── spark_analysis.py             # 2.27M-row scale processing + PySpark equivalents
+│   └── spark_analysis.py                 # 2.27M-row scale processing + PySpark equivalents
 ├── notebooks/
-│   └── core_analysis.py              # Regression, forecast, all 6 visualizations
+│   └── core_analysis.py                  # Regression, forecast, all 6 visualizations
+├── streamlit/
+│   └── app.py                            # 6-page interactive Plotly dashboard (live URL above)
 ├── tests/
-│   └── test_heatpulse.py             # 52 data quality + pipeline tests (52/52 pass)
+│   └── test_heatpulse.py                 # 52 data quality + pipeline tests (52/52 pass)
 ├── outputs/
 │   ├── 01_temp_demand_correlation.png
 │   ├── 02_grid_demand_forecast.png
@@ -225,7 +261,12 @@ heatpulse_india_2026/
 │   ├── 04_state_risk_ranking.png
 │   ├── 05_sensitivity_analysis.png
 │   ├── 06_sector_impact.png
-│   └── analysis_results.json
+│   ├── analysis_results.json
+│   ├── HeatPulse_India_2026_MBB_Deck.pptx   # 3-slide MBB executive summary
+│   └── HeatPulse_India_2026_MBB_Model.xlsx  # Excel sensitivity model (3 sheets)
+├── PowerBI Dashboards/
+│   └── HeatPulse_India_2026.pbix            # 3-page interactive Power BI dashboard
+├── runtime.txt                               # Python 3.12 for Streamlit Cloud
 ├── requirements.txt
 └── README.md
 ```
@@ -253,7 +294,7 @@ heatpulse_india_2026/
 ## Reproducibility
 
 ```bash
-git clone https://github.com/pranay-sawant/heatpulse-india-2026
+git clone https://github.com/psawant14890-wq/heatpulse-india-2026
 cd heatpulse_india_2026
 pip install -r requirements.txt
 
@@ -268,8 +309,10 @@ python spark/spark_analysis.py
 
 # Run all tests
 python tests/test_heatpulse.py
-
 # Expected: 52 passed | 0 failed
+
+# Run Streamlit dashboard locally
+streamlit run streamlit/app.py
 ```
 
 All random seeds are fixed (`np.random.seed(2026)`) — results are fully reproducible across runs and machines.

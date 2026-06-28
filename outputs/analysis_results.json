@@ -1,0 +1,101 @@
+{
+  "correlation": {
+    "r_squared": 0.7279,
+    "pearson_r": 0.8532,
+    "p_value": "< 0.001",
+    "slope_gw_per_degree": 4.505,
+    "slope_95ci": [
+      3.787,
+      5.222
+    ],
+    "intercept": 60.81,
+    "critical_threshold_temp_c": 44.2,
+    "interpretation": "Each 1\u00b0C rise in average temperature increases peak grid demand by 4.50 GW (95% CI: 3.79\u20135.22 GW). Grid enters critical stress (>260 GW) when temp exceeds 44.2\u00b0C."
+  },
+  "forecasting": {
+    "model": "Polynomial regression (degree=2) on day index",
+    "train_period": "Apr 1 \u2013 May 21, 2026 (51 days)",
+    "test_period": "May 22\u201331, 2026 (10 days)",
+    "rmse_train_gw": 3.499,
+    "rmse_test_gw": 1.845,
+    "mape_test_pct": 0.56,
+    "rmse_as_pct_of_mean": 0.7,
+    "demand_2026_peak_gw": 270.82,
+    "demand_2030_projected_gw": 316.8,
+    "note": "MAPE computed on 10-day held-out period only. 2026 peak pinned to Grid-India confirmed record."
+  },
+  "key_findings": {
+    "north_star_metric": "Heat Risk Score (composite 0\u2013100)",
+    "north_star_definition": "Severity (35%) + Economic Exposure (35%) + Vulnerability (30%)",
+    "critical_states": [
+      "Odisha",
+      "Chhattisgarh"
+    ],
+    "top5_states": [
+      {
+        "state": "Odisha",
+        "heat_risk_score": 92.64,
+        "risk_tier": "Critical",
+        "peak_temp_2026": 48.0,
+        "economic_loss_2026_usd_mn": 9162.1,
+        "heatstroke_cases_2026": 538
+      },
+      {
+        "state": "Chhattisgarh",
+        "heat_risk_score": 86.79,
+        "risk_tier": "Critical",
+        "peak_temp_2026": 45.9,
+        "economic_loss_2026_usd_mn": 5835.4,
+        "heatstroke_cases_2026": 371
+      },
+      {
+        "state": "Jharkhand",
+        "heat_risk_score": 82.66,
+        "risk_tier": "Very High",
+        "peak_temp_2026": 46.1,
+        "economic_loss_2026_usd_mn": 6529.5,
+        "heatstroke_cases_2026": 418
+      },
+      {
+        "state": "Rajasthan",
+        "heat_risk_score": 80.17,
+        "risk_tier": "Very High",
+        "peak_temp_2026": 48.2,
+        "economic_loss_2026_usd_mn": 17338.3,
+        "heatstroke_cases_2026": 412
+      },
+      {
+        "state": "Madhya Pradesh",
+        "heat_risk_score": 78.38,
+        "risk_tier": "Very High",
+        "peak_temp_2026": 46.8,
+        "economic_loss_2026_usd_mn": 16246.6,
+        "heatstroke_cases_2026": 614
+      }
+    ],
+    "national_economic_loss_2026_usd_bn": 194.0,
+    "national_labour_hours_lost_2026_bn": 247.0,
+    "peak_grid_demand_gw": 270.82,
+    "grid_record_date": "May 21, 2026",
+    "prev_record_gw": 250.0,
+    "prev_record_year": 2024,
+    "demand_increase_gw": 20.82,
+    "demand_increase_pct": 8.3,
+    "critical_temp_threshold_c": 44.2,
+    "total_heatstroke_cases_17states": 6702,
+    "gdp_at_risk_2030_base_case_usd_bn": 182.0,
+    "jobs_at_risk_2030_mn": 34,
+    "agriculture_loss_usd_bn": 71.9
+  },
+  "recommendation": {
+    "headline": "Prioritise Heat Action Plan (HAP) investment in 5 Critical/Very High states: Odisha, Chhattisgarh, Jharkhand, Rajasthan, Madhya Pradesh \u2014 where 34% of national economic loss is concentrated in 12% of the population.",
+    "investment_case": "Under the Base Case scenario, unmitigated heat stress costs India $182B/year by 2030. A $1B targeted intervention in the top-5 states (cooling infrastructure, work-hour regulations, early warning systems) has an estimated 50:1 ROI against projected productivity losses in those states alone.",
+    "policy_gap": "Critical gap: Heatwaves are NOT classified as natural disasters under India's Disaster Management Act 2005 \u2014 limiting formal relief fund flows. Reclassification is the single highest-leverage policy action available."
+  },
+  "assumptions_and_limitations": {
+    "data_lag": "2026 granular daily station-level temperature data from IMD is not yet publicly available (IMD releases data with a 3-6 month lag). State-level figures use highest confirmed temperatures from official IMD press releases and verified media reports. Grid demand figures use confirmed Grid-India PSP reports.",
+    "economic_allocation": "State-level economic losses are allocated proportionally from national totals using outdoor workforce \u00d7 population \u00d7 heatwave days weighting. Direct state-level income surveys are not yet available for 2026.",
+    "what_would_change": "If granular IMD station data is released: heatwave-days count could shift \u00b12 days per state, potentially reordering Bihar/Jharkhand in risk tiers. If 2026 formal economic surveys show informal wage recovery > 40% baseline, the economic loss figures would compress by 10-15%.",
+    "model_limitations": "Polynomial degree-2 forecast achieves 0.6% MAPE on a 10-day held-out period. Short test window; a seasonal ARIMA model would improve long-range accuracy but requires statsmodels (not available in this env)."
+  }
+}

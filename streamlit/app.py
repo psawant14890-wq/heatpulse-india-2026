@@ -342,21 +342,35 @@ elif page == "⚡ Grid & Power Demand":
 
         with col2:
             st.markdown("##### Temperature vs Demand Correlation")
-            fig2 = px.scatter(
-                gf, x="avg_temp_c", y="peak_demand_gw",
-                color="peak_demand_gw",
-                color_continuous_scale=["#AEC7E8","#FF7F0E","#D62728"],
-                hover_data={"date": True, "avg_temp_c": ":.1f", "peak_demand_gw": ":.2f"},
-                labels={"avg_temp_c": "Avg Temperature (°C)",
-                        "peak_demand_gw": "Peak Demand (GW)"},
-                trendline="ols",
-            )
+            slope_val  = results["correlation"]["slope_gw_per_degree"]
+            interc_val = results["correlation"]["intercept"]
+            x_line = np.linspace(gf["avg_temp_c"].min(), gf["avg_temp_c"].max(), 100)
+            y_line = slope_val * x_line + interc_val
+            fig2 = go.Figure()
+            fig2.add_trace(go.Scatter(
+                x=gf["avg_temp_c"], y=gf["peak_demand_gw"],
+                mode="markers",
+                marker=dict(color=gf["peak_demand_gw"],
+                            colorscale=["#AEC7E8","#FF7F0E","#D62728"],
+                            size=8, showscale=False),
+                customdata=gf["date"].dt.strftime("%b %d"),
+                hovertemplate="<b>%{customdata}</b><br>Temp: %{x:.1f}°C<br>Demand: %{y:.2f} GW<extra></extra>",
+                name="Daily observation"
+            ))
+            fig2.add_trace(go.Scatter(
+                x=x_line, y=y_line, mode="lines",
+                line=dict(color="#D62728", width=2, dash="dash"),
+                name=f"Regression (R²={results['correlation']['r_squared']})",
+                hovertemplate="Regression: %{y:.2f} GW<extra></extra>"
+            ))
             fig2.add_hline(y=260, line_dash="dash", line_color="#FFD700",
-                           annotation_text="Stress Threshold")
+                           annotation_text="Stress Threshold 260 GW")
             fig2.update_layout(**PLOTLY_THEME, height=350,
-                               coloraxis_showscale=False,
-                               title=f"R²={results['correlation']['r_squared']} | Slope: {results['correlation']['slope_gw_per_degree']} GW/°C",
-                               margin=dict(l=0,r=0,t=50,b=0))
+                               xaxis_title="Avg Temperature (°C)",
+                               yaxis_title="Peak Demand (GW)",
+                               title=f"R²={results['correlation']['r_squared']} | Slope: {slope_val} GW/°C",
+                               legend=dict(orientation="h", y=1.15),
+                               margin=dict(l=0,r=0,t=55,b=0))
             st.plotly_chart(fig2, use_container_width=True)
 
     st.divider()

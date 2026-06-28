@@ -1,0 +1,4 @@
+scenario,gdp_loss_pct,assumption,gdp_loss_usd_bn_2030,labour_hours_at_risk_bn,jobs_at_risk_mn
+Conservative,2.5,"Effective Heat Action Plans in top-10 states, monsoon on time",130.0,280.0,22.0
+Base Case,3.5,"Partial adaptation, 3 consecutive record summers (2024-2026 pattern continues)",182.0,340.0,34.0
+Severe,4.5,"No systemic adaptation, El Niño strengthens, below-normal monsoon",234.0,410.0,47.0

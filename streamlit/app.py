@@ -23,7 +23,7 @@ import sys
 
 # ── Path resolution (works both locally and on Streamlit Cloud) ─────────────
 BASE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.join(BASE, '..')
+ROOT = os.path.abspath(os.path.join(BASE, ".."))  # fixed for Streamlit Cloud
 DATA = os.path.join(ROOT, 'data', 'processed')
 OUT  = os.path.join(ROOT, 'outputs')
 
